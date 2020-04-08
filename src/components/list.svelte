@@ -1,12 +1,11 @@
 <script>
     import ListItem from './list-item.svelte'
-    import { todos } from '../stores.js'
-    export let selectedIndex = -1;
+    import { todos, cursor } from '../stores.js'
 </script>
 
 <ul>
     {#each Object.entries($todos) as [uuid, { text }], i (uuid)}
-        <ListItem selected={selectedIndex == i} {uuid} {text} />
+        <ListItem selected={$cursor === i} {uuid} {text} />
     {/each}
 </ul>
 

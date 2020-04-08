@@ -1,22 +1,21 @@
 <script>
-    import { focusOnSelect, saveOnKeyEnter } from './inputDirectives.js'
-    import { todos } from '../stores.js'
+    import { todos,cursor } from '../stores.js'
     export let uuid = "";
     export let text = "";
     export let selected = false;
     let done = false;
 </script>
 
-<li  class:selected>
+<li class:selected>
     <label>
         <input type="checkbox" bind:checked={done}>
-        {#if selected}
-            <span class:done>
-                <input value={text} use:focusOnSelect use:saveOnKeyEnter={uuid}>
-            </span>
-        {:else}
-            <span class:done>{text}</span>
-        {/if}
+        <span class:done>
+            {#if false}
+                <input value={text}>
+            {:else}
+                {text}
+            {/if}
+        </span>
     </label>
     <button on:click={todos.delete(uuid)}>delete</button>
 </li>

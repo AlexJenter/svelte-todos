@@ -1,8 +1,9 @@
 <script>
 	import { createEventDispatcher } from 'svelte'
+	import { keysToState } from './inputDirectives.js'
 	import List from './components/list.svelte'
-	import { todos } from './stores'
-	import { clamp, identity } from "ramda";
+	import { todos, cursor } from './stores'
+	import { clamp } from "ramda";
 	import { match } from './helpers.js'
 
 	const dispatch = createEventDispatcher()
@@ -31,22 +32,21 @@
 			Escape() {
 				todoSelectedIndex = -1;
 			}
-		})
-		// console.log(event);
-		
+		});
 	}
 </script>
 
-<svelte:window on:keydown={handleKeydown}/>
+<svelte:window use:keysToState />
 
 <main>
+	{ $cursor }
 	<form on:submit|preventDefault={onAdd}>
 		<input type="text" bind:value={todoText}>
 		<button type="submit">+</button>
 		<button type="button" on:click={todos.reset}>reset</button>
 	</form>
 
-	<List selectedIndex={todoSelectedIndex} on:edit/>
+	<List />
 </main>
 
 <style>
