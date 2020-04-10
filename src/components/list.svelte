@@ -4,7 +4,7 @@
 </script>
 
 <ul>
-    {#each $cursedTodos as todo, i (todo.uuid)}
+    {#each $cursedTodos as todo (todo.uuid)}
         <ListItem {todo} />
     {/each}
 </ul>

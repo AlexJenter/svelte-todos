@@ -5,10 +5,18 @@ import {
   compose,
   dec,
   inc,
+  lensIndex,
+  lensProp,
   map,
   merge,
+  not,
+  over,
   propEq,
   reject,
+  identity,
+  view,
+  tap,
+  remove,
 } from "ramda";
 
 import { writable, derived } from "svelte/store";
@@ -35,8 +43,7 @@ function CreateTodos() {
     subscribe,
     add: (text) => update(append(withDefaults({ text }))),
     delete: (uuid) => update(reject(propEq("uuid", uuid))),
-    toggleDone: (uuid) =>
-      update(map((t) => (t.uuid === uuid ? { ...t, done: !t.done } : t))),
+    update: (fn) => update(fn),
     reset: () => set([]),
   };
 }
@@ -47,19 +54,35 @@ function CreateCursor() {
   let boundedInc;
   let boundedDec;
 
-  todos.subscribe((ts) => {
-    boundedInc = compose(clamp(0, ts.length - 1), inc);
-    boundedDec = compose(clamp(0, ts.length - 1), dec);
+  todos.subscribe((todos) => {
+    boundedInc = compose(clamp(0, todos.length - 1), inc);
+    boundedDec = compose(clamp(0, todos.length - 1), dec);
   });
+
+  const safeUpdate = (fn) =>
+    update((c) => {
+      if (c === -1) return c;
+      fn(c);
+      return c;
+    });
 
   return {
     subscribe,
     reset: () => set(-1),
     prev: () => update(boundedDec),
     next: () => update(boundedInc),
-    setLen: () => {
-      console.log(OHAI);
-    },
+    delete: () =>
+      update((c) => {
+        if (c === -1) return c;
+        todos.update(remove(c, 1));
+        return c;
+      }),
+    toggleDone: () =>
+      update((c) => {
+        if (c === -1) return c;
+        todos.update(over(compose(lensIndex(c), lensProp`done`), not));
+        return c;
+      }),
   };
 }
 export const cursor = CreateCursor();

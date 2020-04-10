@@ -1,5 +1,5 @@
 import { match } from "./helpers.js";
-import { todos, cursor } from "./stores.js";
+import { todos, cursor, cursedTodos } from "./stores.js";
 
 export const focusOnSelect = (node) => {
   node && typeof node.focus === "function" && node.focus();
@@ -42,7 +42,15 @@ export const keysToState = (node) => {
       Escape() {
         cursor.reset();
       },
-      KeyE() {},
+      KeyD() {
+        cursor.toggleDone();
+      },
+      KeyD() {
+        cursor.toggleDone();
+      },
+      Backspace() {
+        cursor.delete();
+      },
     });
   };
 
