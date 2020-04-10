@@ -4,8 +4,9 @@
 </script>
 
 <ul>
-    {#each Object.entries($todos) as [uuid, { text }], i (uuid)}
-        <ListItem selected={$cursor === i} {uuid} {text} />
+    {$cursor}
+    {#each $todos as todo, i (todo.uuid)}
+        <ListItem {todo} />
     {/each}
 </ul>
 

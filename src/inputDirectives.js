@@ -42,6 +42,34 @@ export const keysToState = (node) => {
       Escape() {
         cursor.reset();
       },
+      KeyE() {},
+    });
+  };
+
+  node.addEventListener("keydown", handle);
+
+  return {
+    destroy() {
+      node.removeEventListener("keydown", handle);
+    },
+  };
+};
+
+export const todoOnKey = (node, todo) => {
+  node && typeof node.select === "function" && node.select();
+  node && typeof node.focus === "function" && node.focus();
+
+  const handle = (event) => {
+    match(event.code, {
+      ArrowUp() {
+        todo.edit = false;
+      },
+      ArrowDown() {
+        todo.edit = false;
+      },
+      Enter() {
+        todo.edit = false;
+      },
     });
   };
 

@@ -1,23 +1,27 @@
 <script>
-    import { todos,cursor } from '../stores.js'
-    export let uuid = "";
-    export let text = "";
-    export let selected = false;
-    let done = false;
+    import { match } from "../helpers";
+    import { todos, cursor } from '../stores.js'
+    import { todoOnKey } from "../inputDirectives.js";
+
+    import DebugInfo from "./debug-info.svelte";
+    export let todo;
+    $: selected = todo.cursorDelta === 0
 </script>
 
-<li class:selected>
+<li>
+    <input type="checkbox" bind:checked={todo.done} />
     <label>
-        <input type="checkbox" bind:checked={done}>
-        <span class:done>
-            {#if false}
-                <input value={text}>
+    {todo.cursorDelta}
+        <!-- <DebugInfo dump={todo}/> -->
+        <span >
+            {#if todo.edit}
+                <input bind:value={todo.text} use:todoOnKey={todo}>
             {:else}
-                {text}
+                {todo.text}
             {/if}
         </span>
     </label>
-    <button on:click={todos.delete(uuid)}>delete</button>
+    <button on:click={todos.delete(todo.uuid)}>&times;</button>
 </li>
 
 <style>
@@ -25,12 +29,15 @@
         display: flex;
         align-items: center;
     }
+    input, button {
+        display: block;
+    }
     li.selected {
-        background: red;
+        background: palegoldenrod;
     }
     span {
         display: inline-block;
-        width: 300px;
+        width: 500px;
     }
     span.done {
         text-decoration: line-through;

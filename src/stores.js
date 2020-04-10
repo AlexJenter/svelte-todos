@@ -1,43 +1,52 @@
-import { __, clamp, compose, merge, over, dec, inc, lensProp } from "ramda";
-import { writable } from "svelte/store";
+import { __, clamp, compose, merge, dec, inc } from "ramda";
+import { writable, derived } from "svelte/store";
 import { v1 as uuid } from "uuid";
 
 import { dropKey } from "./helpers.js";
 
 function CreateTodos() {
-  const { subscribe, set, update } = writable({
-    [uuid()]: { text: "buy milk" },
-    [uuid()]: { text: "learn svelte" },
+  const { subscribe, set, update } = writable([
+    { uuid: uuid(), done: true, text: "buy milk" },
+    { uuid: uuid(), done: false, text: "learn svelte" },
+  ]);
+
+  const defaultProps = () => ({
+    uuid: uuid(),
+    done: false,
   });
 
   return {
     subscribe,
-    add: (text) => update((xs) => ({ ...xs, [uuid()]: { text } })),
-    update: (todoId, text) => update(merge(__, { [todoId]: { text } })),
-    delete: (todoId) => update((xs) => dropKey(todoId, xs)),
-    reset: () => set({}),
+    add: (text) => update((todos) => [...todos, { ...defaultProps(), text }]),
+    delete: (uuid) => update((todos) => todos.filter((t) => t.uuid !== uuid)),
   };
 }
 
 export const todos = CreateTodos();
 
-function CreateCursor(len) {
+function CreateCursor() {
   const { subscribe, set, update } = writable(-1);
-  let max;
+  let boundedInc;
+  let boundedDec;
+  let currentValue;
 
-  todos.subscribe(($todos) => {
-    max = Object.keys($todos).length - 1;
+  const updateTodoDeltas = (ts, cI) => {
+    ts.map((t, tI) => (t.cursorDelta = cI - tI));
+  };
+
+  todos.subscribe((todos) => {
+    update((x) => (currentValue = x));
+    updateTodoDeltas(todos, currentValue);
+    boundedInc = compose(clamp(0, todos.length - 1), inc);
+    boundedDec = compose(clamp(0, todos.length - 1), dec);
   });
-
-  const boundedInc = compose(clamp(0, max), inc);
-  const boundedDec = compose(clamp(0, max), dec);
 
   return {
     subscribe,
+    reset: () => set(-1),
     prev: () => update(boundedDec),
     next: () => update(boundedInc),
-    reset: () => set(-1),
   };
 }
 
-export const cursor = CreateCursor(2);
+export const cursor = CreateCursor();
