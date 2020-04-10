@@ -1,11 +1,10 @@
 <script>
     import ListItem from './list-item.svelte'
-    import { todos, cursor } from '../stores.js'
+    import { cursedTodos } from '../stores.js'
 </script>
 
 <ul>
-    {$cursor}
-    {#each $todos as todo, i (todo.uuid)}
+    {#each $cursedTodos as todo, i (todo.uuid)}
         <ListItem {todo} />
     {/each}
 </ul>

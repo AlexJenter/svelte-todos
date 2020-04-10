@@ -4,15 +4,20 @@
     import { todoOnKey } from "../inputDirectives.js";
 
     import DebugInfo from "./debug-info.svelte";
+
     export let todo;
     $: selected = todo.cursorDelta === 0
+    $: checked = todo.done
+
+    const toggleDone = () => {
+        todos.toggleDone(todo.uuid)
+    };
+
 </script>
 
-<li>
-    <input type="checkbox" bind:checked={todo.done} />
+<li class:selected>
+    <input type="checkbox" {checked} on:change={toggleDone} />
     <label>
-    {todo.cursorDelta}
-        <!-- <DebugInfo dump={todo}/> -->
         <span >
             {#if todo.edit}
                 <input bind:value={todo.text} use:todoOnKey={todo}>
