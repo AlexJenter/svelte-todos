@@ -45,8 +45,8 @@ export const keysToState = (node) => {
       KeyD() {
         cursor.toggleDone();
       },
-      KeyD() {
-        cursor.toggleDone();
+      KeyE() {
+        cursor.toggleEdit();
       },
       Backspace() {
         cursor.delete();

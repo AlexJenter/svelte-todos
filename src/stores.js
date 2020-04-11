@@ -17,6 +17,10 @@ import {
   view,
   tap,
   remove,
+  cond,
+  equals,
+  T,
+  findIndex,
 } from "ramda";
 
 import { writable, derived } from "svelte/store";
@@ -45,6 +49,12 @@ function CreateTodos() {
     delete: (uuid) => update(reject(propEq("uuid", uuid))),
     update: (fn) => update(fn),
     reset: () => set([]),
+    toggleDone: (uuid) =>
+      update((ts) => {
+        const todoIndex = findIndex(propEq("uuid", uuid), ts);
+        const doneProp = compose(lensIndex(todoIndex), lensProp`done`);
+        return over(doneProp, not, ts);
+      }),
   };
 }
 export const todos = CreateTodos();
@@ -54,34 +64,31 @@ function CreateCursor() {
   let boundedInc;
   let boundedDec;
 
+  const safeUpdate = (fn) =>
+    update((c) => {
+      if (c !== -1) fn(c);
+      return c;
+    });
+
   todos.subscribe((todos) => {
     boundedInc = compose(clamp(0, todos.length - 1), inc);
     boundedDec = compose(clamp(0, todos.length - 1), dec);
   });
 
-  const safeUpdate = (fn) =>
-    update((c) => {
-      if (c === -1) return c;
-      fn(c);
-      return c;
-    });
-
   return {
     subscribe,
     reset: () => set(-1),
+    set: (x) => set(x),
     prev: () => update(boundedDec),
     next: () => update(boundedInc),
     delete: () =>
-      update((c) => {
-        if (c === -1) return c;
+      safeUpdate((c) => {
         todos.update(remove(c, 1));
-        return c;
       }),
     toggleDone: () =>
-      update((c) => {
-        if (c === -1) return c;
-        todos.update(over(compose(lensIndex(c), lensProp`done`), not));
-        return c;
+      safeUpdate((c) => {
+        const doneProp = compose(lensIndex(c), lensProp`done`);
+        todos.update(over(doneProp, not));
       }),
   };
 }
