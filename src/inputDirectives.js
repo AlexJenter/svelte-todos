@@ -70,13 +70,14 @@ export const todoOnKey = (node, todo) => {
   const handle = (event) => {
     match(event.code, {
       ArrowUp() {
-        todo.edit = false;
+        todos.toggleEdit(todo.uuid);
       },
       ArrowDown() {
-        todo.edit = false;
+        todos.toggleEdit(todo.uuid);
       },
       Enter() {
-        todo.edit = false;
+        console.log(event);
+        // todos.toggleEdit(todo.uuid);
       },
     });
   };

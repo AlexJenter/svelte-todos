@@ -55,6 +55,12 @@ function CreateTodos() {
         const doneProp = compose(lensIndex(todoIndex), lensProp`done`);
         return over(doneProp, not, ts);
       }),
+    toggleEdit: (uuid) =>
+      update((ts) => {
+        const todoIndex = findIndex(propEq("uuid", uuid), ts);
+        const doneProp = compose(lensIndex(todoIndex), lensProp`edit`);
+        return over(doneProp, not, ts);
+      }),
   };
 }
 export const todos = CreateTodos();
@@ -89,6 +95,11 @@ function CreateCursor() {
       safeUpdate((c) => {
         const doneProp = compose(lensIndex(c), lensProp`done`);
         todos.update(over(doneProp, not));
+      }),
+    toggleEdit: () =>
+      safeUpdate((c) => {
+        const editProp = compose(lensIndex(c), lensProp`edit`);
+        todos.update(over(editProp, not));
       }),
   };
 }

@@ -11,25 +11,23 @@
     $: selected = todo.cursorDelta === 0
     $: done = todo.done
 
-    const toggleDone = () => {
-        dispatch('toggledone', {
-            uuid: todo.uuid,
-            done: !todo.done
-        })
-    };
+    const toggleDone = () => todos.toggleDone(todo.uuid);
+    const toggleEdit = () => todos.toggleEdit(todo.uuid);
 </script>
 
 
 <li class:selected>
     <input type="checkbox" checked={done} class="checkbox" on:change={toggleDone}/>
     <label>
-        <span class:done>
-            {#if false}
-                <input bind:value={todo.text} >
-            {:else}
+        {#if todo.edit}
+            <span class:done>
+                <input bind:value={todo.text} use:todoOnKey={todo}>
+            </span>
+        {:else}
+            <span class:done on:click={toggleEdit}>
                 {todo.text}
-            {/if}
-        </span>
+            </span>
+        {/if}
     </label>
     <button
         on:click={todos.delete(todo.uuid) }
