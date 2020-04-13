@@ -3,13 +3,14 @@
 	import { keysToState } from './inputDirectives.js'
 	import Form from './components/Form.svelte'
 	import List from './components/list.svelte'
+	import Todos from './components/Todos.svelte'
 </script>
 
 <svelte:window use:keysToState />
 
 <main>
 	<Form />
-	<List />
+	<Todos />
 </main>
 
 <style>

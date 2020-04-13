@@ -1,29 +1,17 @@
 <script>
-	import { UiService } from "../stateMachines";
-    import { form as formStore, todos, cursor } from '../stores'
-    import { formInputOnKeys } from "../inputDirectives";
-
-    const onSubmit = () => {
-		UiService.send({
-			type: 'FORM_SUBMIT',
-			value: $formStore
-		})
-	};	
-
-	const onClick = () => {
-		UiService.send('FOCUS_FORM')
-	};
+    import { useTodosMachine } from "../machines/todosMachine";
+    const { state, send } = useTodosMachine();
 </script>
 
-<form
-    on:submit|preventDefault={onSubmit}
-    on:click={onClick}
+
+<input
+	on:keypress={event => {
+		if(event.key === 'Enter') {
+			send({type: 'NEWTODO.COMMIT', value: event.target.value })
+		}
+	}}
+	on:input={event=> {
+		send({type: 'NEWTODO.CHANGE', value: event.target.value})
+	}}
+	value={$state.context.todo}
 >
-    <input
-		use:formInputOnKeys
-		type="text"
-		bind:value={$formStore}
-	>
-    <button type="submit">+</button>
-    <button type="button" on:click={todos.reset}>reset</button>
-</form>
