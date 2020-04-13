@@ -38,7 +38,7 @@ function CreateTodos() {
 
   const { subscribe, set, update } = writable(
     [
-      { done: true, text: "buy milk" },
+      { done: true, text: "buy vegan milk" },
       { done: false, text: "learn svelte" },
     ].map(withDefaults)
   );
@@ -104,6 +104,18 @@ function CreateCursor() {
   };
 }
 export const cursor = CreateCursor();
+
+function CreateForm() {
+  const { subscribe, set, update } = writable("");
+
+  return {
+    subscribe,
+    update,
+    set: (x) => set(x),
+    reset: () => set(""),
+  };
+}
+export const form = CreateForm();
 
 export const cursedTodos = derived([todos, cursor], ([$todos, $cursor]) => {
   return $todos.map((todo, i) => merge(todo, { cursorDelta: $cursor - i }));

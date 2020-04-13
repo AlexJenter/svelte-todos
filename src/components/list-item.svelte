@@ -1,7 +1,6 @@
 <script>
     import { match } from "../helpers";
     import { todos, cursor } from '../stores.js'
-    import { todoOnKey } from "../inputDirectives.js";
     import DebugInfo from "./debug-info.svelte";
     import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
@@ -17,14 +16,14 @@
 
 
 <li class:selected>
-    <input type="checkbox" checked={done} class="checkbox" on:change={toggleDone}/>
+    <input type="checkbox" checked={done} class="checkbox"/>
     <label>
         {#if todo.edit}
             <span class:done>
-                <input bind:value={todo.text} use:todoOnKey={todo}>
+                <input bind:value={todo.text}>
             </span>
         {:else}
-            <span class:done on:click={toggleEdit}>
+            <span class:done>
                 {todo.text}
             </span>
         {/if}

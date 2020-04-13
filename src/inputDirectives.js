@@ -1,5 +1,5 @@
 import { match } from "./helpers.js";
-import { todos, cursor, cursedTodos } from "./stores.js";
+import { UiService } from "./stateMachines";
 
 export const focusOnSelect = (node) => {
   node && typeof node.focus === "function" && node.focus();
@@ -9,15 +9,9 @@ export const focusOnSelect = (node) => {
 export const saveOnKeyEnter = (node, uuid) => {
   const handle = (event) => {
     match(event.code, {
-      Enter() {
-        todos.update(uuid, node.value);
-      },
-      ArrowUp() {
-        todos.update(uuid, node.value);
-      },
-      ArrowDown() {
-        todos.update(uuid, node.value);
-      },
+      Enter() {},
+      ArrowUp() {},
+      ArrowDown() {},
     });
   };
 
@@ -33,23 +27,19 @@ export const saveOnKeyEnter = (node, uuid) => {
 export const keysToState = (node) => {
   const handle = (event) => {
     match(event.code, {
-      ArrowUp() {
-        cursor.prev();
-      },
+      ArrowUp() {},
       ArrowDown() {
-        cursor.next();
+        UiService.send("FOCUS_LIST");
       },
-      Escape() {
-        cursor.reset();
+      KeyD() {},
+      KeyE() {},
+      Backspace() {},
+      Tab() {
+        UiService.send("FOCUS_FORM");
       },
-      KeyD() {
-        cursor.toggleDone();
-      },
-      KeyE() {
-        cursor.toggleEdit();
-      },
-      Backspace() {
-        cursor.delete();
+      Enter() {
+        const { value } = event.target;
+        UiService.send({ type: "FORM_SUBMIT", value });
       },
     });
   };
@@ -63,27 +53,16 @@ export const keysToState = (node) => {
   };
 };
 
-export const todoOnKey = (node, todo) => {
-  node && typeof node.select === "function" && node.select();
-  node && typeof node.focus === "function" && node.focus();
-
+export const formInputOnKeys = (node) => {
   const handle = (event) => {
     match(event.code, {
-      ArrowUp() {
-        todos.toggleEdit(todo.uuid);
-      },
-      ArrowDown() {
-        todos.toggleEdit(todo.uuid);
-      },
-      Enter() {
-        console.log(event);
-        // todos.toggleEdit(todo.uuid);
+      Escape() {
+        node.blur();
       },
     });
   };
 
   node.addEventListener("keydown", handle);
-
   return {
     destroy() {
       node.removeEventListener("keydown", handle);
