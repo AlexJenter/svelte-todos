@@ -2,10 +2,10 @@ import { createMachine, assign } from "xstate";
 import { useMachine } from "svelte-xstate";
 import { v4 as uuid } from "uuid";
 
-const createTodo = (text) => ({
+const createTodo = (todo) => ({
   id: uuid(),
-  done: false,
-  text,
+  completed: false,
+  ...todo,
 });
 
 export const TodosMachine = createMachine({
@@ -43,9 +43,9 @@ let [state, send] = useMachine(
     {
       todo: "",
       todos: [
-        createTodo("buy soy boi milk"),
-        createTodo("learn svelte"),
-        createTodo("learn state management"),
+        createTodo({ text: "buy soy boi milk", completed: true }),
+        createTodo({ text: "learn svelte" }),
+        createTodo({ text: "learn state management" }),
       ],
     }
   )

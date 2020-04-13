@@ -4,6 +4,8 @@ import commonjs from "@rollup/plugin-commonjs";
 import livereload from "rollup-plugin-livereload";
 import { terser } from "rollup-plugin-terser";
 import injectProcessEnv from "rollup-plugin-inject-process-env";
+import autoPreprocess from "svelte-preprocess";
+
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
@@ -20,6 +22,7 @@ export default {
       dev: !production,
       // we'll extract any component CSS out into
       // a separate file - better for performance
+      preprocess: autoPreprocess(),
       css: (css) => {
         css.write("public/build/bundle.css");
       },
