@@ -1,19 +1,56 @@
 <script>
     export let todo;
-    $: completed = todo.completed
+    import { createEventDispatcher } from "svelte";
+    import { useMachine } from "svelte-xstate";
+    import { todoMachine } from "../machines/todoMachine";
+
+    import { useTodosMachine } from "../machines/todosMachine";
+    const { state: todosState, send: todosSend } = useTodosMachine();
+
+    const dispatch = createEventDispatcher();
+
+    const [ state, send ] = useMachine(todoMachine.withConfig(
+        {
+            actions: {
+                notifyDeleted(context) {
+                    dispatch("delete", context.id)
+                },
+                notifyChange(context) {
+                    dispatch("change", {
+                        id: context.id,
+                        text: context.text,
+                        completed: context.completed,
+                    })
+                },
+            }
+        },
+        todo
+    ));
+
+    $: completed = todo.completed;
+    $: text = todo.text;
+    $: id = todo.id;
 </script>
 
-<li
-    class="Todo"
-    class:completed
->
+<li class="Todo">
     <input
         type="checkbox"
-        checked={completed}
+        bind:checked={completed}
+        on:change={() => todosSend('TODO_TOGGLE_COMPLETED', {id})}
         class="Checkbox"
     >
-    <span class="Text">{todo.text}</span>
-    <button class="Delete">&times;</button>
+    <label
+        class="Text"
+        class:completed
+    >
+        {text}
+    </label>
+    <button
+        class="Delete"
+        on:click={() => todosSend('TODO_DELETE', {id})}
+    >
+        &times;
+    </button>
 </li>
 
 <style lang="scss">
@@ -21,24 +58,21 @@
         display: flex;
         align-items: baseline;
 
-        &.completed > .Text {
-            text-decoration: line-through;
-        }
     }
 
     .Text {
         display: inline-block;
         flex-grow: 1;
+        margin: 0 10px;        
+
+        &.completed {
+            text-decoration: line-through;
+        }
     }
 
-    .Checkbox {
-        display: block;
-        margin-right: 10px;
-    }
+    .Checkbox {}
 
     .Delete {
-        margin-left: 10px;
-        display: block;
         border: none;
         background: none;
     }

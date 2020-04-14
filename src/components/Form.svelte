@@ -13,8 +13,14 @@
 </script>
 
 
-<input
-	on:keypress={onKepress}
-	on:input={onInput}
-	value={$state.context.todo}
->
+<form>
+	<input
+		on:keypress={onKepress}
+		on:input={onInput}
+		value={$state.context.todo}
+	>
+	<button
+		type="button"
+		on:click={() => send('SEED')}
+	>seed</button>
+</form>
