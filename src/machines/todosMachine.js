@@ -1,5 +1,5 @@
-import { createMachine, assign } from "xstate";
-import { useMachine } from "svelte-xstate";
+import { Machine, assign } from "xstate";
+import { useMachine } from "./useMachine";
 import { v4 as uuid } from "uuid";
 
 const createTodo = (todo) => ({
@@ -8,7 +8,7 @@ const createTodo = (todo) => ({
   ...todo,
 });
 
-export const TodosMachine = createMachine({
+export const TodosMachine = Machine({
   id: "todos",
   initial: "all",
   context: {
@@ -43,6 +43,9 @@ export const TodosMachine = createMachine({
       ],
       cond: (context, event) => event.value.trim().length,
     },
+    TODO_CHANGE: {
+      actions: ["updateTodo", "persist"],
+    },
     SHOW_ALL: { target: "all" },
     SHOW_ACTIVE: { target: "active" },
     SHOW_COMPLETED: { target: "completed" },
@@ -55,9 +58,7 @@ export const TodosMachine = createMachine({
   },
 });
 
-export const useTodosMachine = () => ({ state, send });
-
-const [state, send] = useMachine(
+export const useTodosMachine = useMachine(
   TodosMachine.withConfig(
     {
       actions: {
@@ -72,6 +73,10 @@ const [state, send] = useMachine(
             ts.map((t) =>
               t.id === id ? { ...t, completed: !t.completed } : t
             ),
+        }),
+        updateTodo: assign({
+          todos: ({ todos: ts }, { id, text }) =>
+            ts.map((t) => (t.id === id ? { ...t, text } : t)),
         }),
         dropAll: (context) => {
           localStorage.setItem("todos-xstate", "");

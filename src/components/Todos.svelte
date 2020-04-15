@@ -1,11 +1,10 @@
 <script>
     import { useTodosMachine } from "../machines/todosMachine";
     import { match } from "../helpers.js";
-    const { state, send } = useTodosMachine();
-
     import Todo from "./Todo.svelte";
 
-
+    const { state, send } = useTodosMachine;
+  
     const filterTodos = ({value}, todos) => match(value, {
         all: () => todos,
         active: () => todos.filter(({completed}) => !completed),
@@ -16,13 +15,10 @@
 </script>
 
 <ul>
-    {#each filteredTodos as todo }
+    {#each filteredTodos as todo (todo.id)}
         <Todo {todo}/>
     {/each}
 </ul>
-
-<!-- <pre>{JSON.stringify($state.value, null, 2)}</pre> -->
-<!-- <pre>{JSON.stringify($state.context, null, 2)}</pre> -->
 
 <style lang="scss">
     ul {

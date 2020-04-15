@@ -1,35 +1,44 @@
 <script>
     export let todo;
-    import { createEventDispatcher } from "svelte";
-    import { useMachine } from "svelte-xstate";
-    import { todoMachine } from "../machines/todoMachine";
 
-    import { useTodosMachine } from "../machines/todosMachine";
-    const { state: todosState, send: todosSend } = useTodosMachine();
+    import { useTodoMachine } from "../machines/todoMachine";
+    const { state, send } = useTodoMachine(todo);
 
-    const [ state, send ] = useMachine(todoMachine.withConfig( {}, todo ));
-
+    $: isEditing = $state.value === 'writing'
     $: completed = todo.completed;
-    $: text = todo.text;
-    $: id = todo.id;
+    $: text = $state.context.text;
+
+    const handleInput = event => {
+        const { target: { value }} = event       
+        send('INPUT', { text: value })
+    };
 </script>
 
 <li class="Todo">
     <input
         type="checkbox"
         bind:checked={completed}
-        on:change={() => todosSend('TODO_TOGGLE_COMPLETED', {id})}
+        on:change={() => send('TOGGLE_COMPLETED')}
         class="Checkbox"
     >
-    <label
-        class="Text"
-        class:completed
-    >
-        {text}
-    </label>
+    {#if isEditing}
+        <button on:click={() => send('EDIT_END')}>save</button>
+        <button on:click={() => send('EDIT_ABORT')}>esc</button>
+        <input
+            type="text"
+            on:input={handleInput}
+            value={text}>
+    {:else}
+        <label
+            class="Text"
+            class:completed
+            on:dblclick={() => send('EDIT_START')}>
+            {text}
+        </label>
+    {/if}
     <button
         class="Delete"
-        on:click={() => todosSend('TODO_DELETE', {id})}
+        on:click={() => send('DELETE')}
     >
         &times;
     </button>
@@ -39,7 +48,6 @@
     .Todo {
         display: flex;
         align-items: baseline;
-
     }
 
     .Text {

@@ -1,6 +1,6 @@
 <script>
     import { useTodosMachine } from "../machines/todosMachine";
-	const { state, send } = useTodosMachine();
+	const { state, send } = useTodosMachine;
 	
 	const onKepress = event => {
 		if(event.key === 'Enter') {
