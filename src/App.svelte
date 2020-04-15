@@ -4,6 +4,7 @@
 	import Form from './components/Form.svelte'
 	import List from './components/list.svelte'
 	import Todos from './components/Todos.svelte'
+	import Filter from './components/Filter.svelte'
 </script>
 
 <svelte:window use:keysToState />
@@ -11,6 +12,7 @@
 <main>
 	<Form />
 	<Todos />
+	<Filter />
 </main>
 
 <style>

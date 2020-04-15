@@ -7,25 +7,7 @@
     import { useTodosMachine } from "../machines/todosMachine";
     const { state: todosState, send: todosSend } = useTodosMachine();
 
-    const dispatch = createEventDispatcher();
-
-    const [ state, send ] = useMachine(todoMachine.withConfig(
-        {
-            actions: {
-                notifyDeleted(context) {
-                    dispatch("delete", context.id)
-                },
-                notifyChange(context) {
-                    dispatch("change", {
-                        id: context.id,
-                        text: context.text,
-                        completed: context.completed,
-                    })
-                },
-            }
-        },
-        todo
-    ));
+    const [ state, send ] = useMachine(todoMachine.withConfig( {}, todo ));
 
     $: completed = todo.completed;
     $: text = todo.text;
